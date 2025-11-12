@@ -139,6 +139,203 @@ result['choices'][0]['message']['content']
 
 ---
 
+## 📊 glm.py 代码对比分析：昨天 vs 今天
+
+### 版本对比
+
+#### 昨天的版本
+```python
+data = {
+    "model": model,
+    "messages": messages,
+    "temperature": 1.0  # ← 昨天是 1.0
+}
+
+# 使用示例
+messages = [
+    {"role": "user", "content": "你好，请介绍一下自己"}  # ← 硬编码字符串
+]
+```
+
+#### 今天的版本
+```python
+data = {
+    "model": model,
+    "messages": messages,
+    "temperature": 0.5  # ← 今天改为 0.5
+}
+
+role_system = "你是醉酒大汉,你刚刚喝醉了"  # ← 新增变量
+
+# 使用示例
+messages = [
+    {"role": "user", "content": f"请介绍一下自己,{role_system}"}  # ← 使用f-string和变量
+]
+```
+
+### 主要差异分析
+
+#### 差异1：temperature 参数值的变化
+- **昨天**：`temperature: 1.0`
+- **今天**：`temperature: 0.5`
+- **说明**：降低了输出随机性，使AI回答更确定、更保守
+
+#### 差异2：新增 role_system 变量
+- **昨天**：无此变量
+- **今天**：`role_system = "你是醉酒大汉,你刚刚喝醉了"`
+- **说明**：将角色描述提取为独立变量，提高代码可维护性
+
+#### 差异3：messages 中 content 的构建方式
+- **昨天**：硬编码字符串 `"你好，请介绍一下自己"`
+- **今天**：使用 f-string 动态构建 `f"请介绍一下自己,{role_system}"`
+- **说明**：使用 f-string 实现动态字符串拼接
+
+### 这些差异所蕴含的 Python 基础知识
+
+#### 1. **变量提取和代码重构**
+
+**知识点：变量的作用**
+```python
+# 昨天的写法（硬编码）
+content = "你好，请介绍一下自己"
+
+# 今天的写法（使用变量）
+role_system = "你是醉酒大汉,你刚刚喝醉了"
+content = f"请介绍一下自己,{role_system}"
+```
+
+**Python 基础知识：**
+- ✅ **代码可维护性**：将重复或可能变化的值提取为变量，便于修改
+- ✅ **变量命名**：使用有意义的变量名（`role_system`）提高代码可读性
+- ✅ **单一职责**：将系统角色描述单独提取，使代码结构更清晰
+
+#### 2. **f-string 中变量的使用**
+
+**知识点：f-string 变量插值**
+```python
+# 昨天的写法
+{"role": "user", "content": "你好，请介绍一下自己"}
+
+# 今天的写法
+role_system = "你是醉酒大汉,你刚刚喝醉了"
+{"role": "user", "content": f"请介绍一下自己,{role_system}"}
+```
+
+**Python 基础知识：**
+
+##### 2.1 f-string 的基本语法
+- f-string 是 Python 3.6+ 引入的字符串格式化方法
+- 在字符串前加 `f` 或 `F` 前缀
+- 使用 `{}` 包裹变量或表达式
+
+##### 2.2 变量在 f-string 中的使用
+```python
+name = "Python"
+age = 30
+message = f"我是{name}，今年{age}岁"  # "我是Python，今年30岁"
+```
+
+##### 2.3 在字典中使用 f-string
+```python
+# 变量可以在字典定义时使用
+role_system = "你是醉酒大汉"
+content = f"请介绍一下自己,{role_system}"
+
+messages = [
+    {"role": "user", "content": content}
+]
+
+# 或者直接在字典中写 f-string
+messages = [
+    {"role": "user", "content": f"请介绍一下自己,{role_system}"}
+]
+```
+
+#### 3. **参数值的修改**
+
+**知识点：理解参数的作用**
+```python
+# 昨天
+"temperature": 1.0
+
+# 今天
+"temperature": 0.5
+```
+
+**Python 基础知识：**
+- `temperature` 是控制 AI 模型输出随机性的参数
+- 值范围通常在 0.0 到 2.0 之间
+- **较低的值（如 0.5）**：输出更确定、更保守
+- **较高的值（如 1.0）**：输出更随机、更有创造性
+- `1.0` 和 `0.5` 都是浮点数（float）类型
+
+#### 4. **代码组织方式的改进**
+
+**昨天的代码结构：**
+```python
+# 所有内容都写在一起
+messages = [
+    {"role": "user", "content": "你好，请介绍一下自己"}
+]
+```
+
+**今天的代码结构：**
+```python
+# 先定义变量
+role_system = "你是醉酒大汉,你刚刚喝醉了"
+
+# 再使用变量构建内容
+messages = [
+    {"role": "user", "content": f"请介绍一下自己,{role_system}"}
+]
+```
+
+**Python 基础知识：**
+- ✅ **变量先定义后使用**：遵循 Python 的执行顺序
+- ✅ **代码分层**：将配置、变量定义、逻辑执行分开
+- ✅ **可扩展性**：如果需要修改角色描述，只需修改 `role_system` 变量
+
+### 核心知识点总结
+
+| 知识点 | 说明 | 代码示例 |
+|--------|------|----------|
+| **变量提取** | 将硬编码值提取为变量，提高可维护性 | `role_system = "..."` |
+| **f-string 变量插值** | 在 f-string 中使用 `{}` 插入变量 | `f"文本{变量}"` |
+| **字典中的 f-string** | 在字典定义时使用 f-string | `{"key": f"value{var}"}` |
+| **参数调优** | 根据需求调整参数值 | `temperature: 0.5` |
+| **代码组织** | 先定义变量，再使用变量 | 变量定义 → 使用变量 |
+
+### 代码演进示例
+
+#### 阶段1：硬编码（昨天）
+```python
+messages = [
+    {"role": "user", "content": "你好，请介绍一下自己"}
+]
+```
+
+#### 阶段2：使用变量（今天）
+```python
+role_system = "你是醉酒大汉,你刚刚喝醉了"
+messages = [
+    {"role": "user", "content": f"请介绍一下自己,{role_system}"}
+]
+```
+
+#### 阶段3：进一步优化（未来可能）
+```python
+# 可以定义更多变量
+greeting = "请介绍一下自己"
+role_system = "你是醉酒大汉,你刚刚喝醉了"
+content = f"{greeting},{role_system}"
+
+messages = [
+    {"role": "user", "content": content}
+]
+```
+
+---
+
 ## 知识点汇总表
 
 | 知识点 | 文件 | 说明 |
@@ -168,6 +365,110 @@ result['choices'][0]['message']['content']
 4. **函数**：理解函数定义、参数传递、返回值
 5. **模块**：学会使用标准库和第三方库
 6. **实践**：多写代码，通过实际项目巩固知识
+
+---
+
+## 🔄 GitHub 版本管理
+
+本项目使用Git和GitHub进行版本控制，记录学习进度和代码变更。
+
+### Git 基本操作
+
+#### 1. 初始化Git仓库（如果尚未初始化）
+```bash
+git init
+```
+
+#### 2. 配置Git用户信息（首次使用需要）
+```bash
+git config --global user.name "你的名字"
+git config --global user.email "你的邮箱"
+```
+
+#### 3. 查看文件状态
+```bash
+git status
+```
+
+#### 4. 添加文件到暂存区
+```bash
+# 添加所有文件
+git add .
+
+# 或添加特定文件
+git add README.md
+git add 101.py
+git add glm.py
+```
+
+#### 5. 提交更改
+```bash
+git commit -m "今日学习内容：Python基础语法和API调用"
+```
+
+#### 6. 查看提交历史
+```bash
+git log
+```
+
+### GitHub 远程仓库操作
+
+#### 1. 在GitHub上创建新仓库
+- 访问 https://github.com
+- 点击右上角 "+" → "New repository"
+- 填写仓库名称（如：python-learning）
+- 选择Public或Private
+- **不要**勾选"Initialize this repository with a README"（因为本地已有文件）
+- 点击"Create repository"
+
+#### 2. 连接本地仓库到GitHub
+```bash
+# 添加远程仓库（将YOUR_USERNAME和REPO_NAME替换为你的信息）
+git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+
+# 查看远程仓库
+git remote -v
+```
+
+#### 3. 推送到GitHub
+```bash
+# 首次推送
+git push -u origin main
+
+# 或如果默认分支是master
+git push -u origin master
+
+# 之后的推送
+git push
+```
+
+#### 4. 从GitHub拉取更新
+```bash
+git pull origin main
+```
+
+### 日常工作流程
+
+1. **修改代码** → 编辑文件
+2. **查看状态** → `git status`
+3. **添加文件** → `git add .`
+4. **提交更改** → `git commit -m "描述性信息"`
+5. **推送到GitHub** → `git push`
+
+### 提交信息规范
+
+建议使用清晰的提交信息：
+- `"添加：今日学习内容总结"`
+- `"更新：完善README文档"`
+- `"修复：修正字符串拼接示例"`
+- `"新增：API调用功能"`
+
+### 版本管理的好处
+
+✅ **备份代码**：代码保存在云端，不会丢失  
+✅ **记录历史**：可以查看每次修改的内容  
+✅ **协作学习**：可以与同学分享代码  
+✅ **学习轨迹**：记录学习进度和成长过程  
 
 ---
 

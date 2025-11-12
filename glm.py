@@ -12,7 +12,7 @@ def call_zhipu_api(messages, model="glm-4-flash"):
     data = {
         "model": model,
         "messages": messages,
-        "temperature": 1.0
+        "temperature": 0.5
     }
 
     response = requests.post(url, headers=headers, json=data)
@@ -22,9 +22,11 @@ def call_zhipu_api(messages, model="glm-4-flash"):
     else:
         raise Exception(f"API调用失败: {response.status_code}, {response.text}")
 
+role_system="你是醉酒大汉,你刚刚喝醉了"
+
 # 使用示例
 messages = [
-    {"role": "user", "content": "你好，请介绍一下自己"}
+    {"role": "user", "content": f"请介绍一下自己,{role_system}"}
 ]
 
 result = call_zhipu_api(messages)
