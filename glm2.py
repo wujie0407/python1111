@@ -27,13 +27,17 @@ def call_zhipu_api(messages, model="glm-4-flash"):
 # 使用示例
 while True:  
     user_input = input("请输入你要说的话：")
-    role_system="你是一个江湖剑客"
-    if user_input in['再见'] :
-     print("对话结束")
-     break
+    role_system="你是一个江湖剑客，如果接下来的对话中我对你表达想要结束对话的意思，你就只回复“江湖再见”这四个字"
     messages = [
         {"role": "user", "content": role_system},{"role": "user", "content": user_input}
     ]
     result = call_zhipu_api(messages)
-    print(result)['choices'][0]['message']['content']
+    reply=result['choices'][0]['message']['content']
+    print(reply)
+    if reply =="江湖再见":
+     print("对话结束。")
+     break
     
+     
+
+
