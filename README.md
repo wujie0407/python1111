@@ -499,6 +499,28 @@ glm.py更新日志
 | 数据结构 | `messages` 是列表 + 字典 | 结构相同，但内容由变量驱动 | 列表、字典、变量插值 |
 | 输出流程 | 错误写法导致 `NoneType` 访问 | 先保存再输出，清晰可靠 | 变量赋值、函数返回值 |
 
+### glm3.py vs glm2.py：随机角色选择
+
+#### 代码对比
+```python
+# glm3.py
+import random
+current_role = random.choice(list(role_system.keys()))
+
+# glm2.py
+role_system = "你是一个江湖剑客..."
+```
+
+- glm3.py 通过 `random.choice()` 在启动时从 `role_system` 的键列表中随机抽取身份，确保每轮游戏体验不同。
+- glm2.py 将角色设定写成固定字符串，因此每次运行都是同一个身份，方便调试但缺少变化。
+
+#### Python 基础知识总结
+- **模块导入**：`import random` 引入标准库 `random`，提供随机数与随机抽取函数。
+- **字典视图转列表**：`role_system.keys()` 返回 `dict_keys` 视图，配合 `list(...)` 转成真正的列表后才能作为序列传入 `random.choice`。
+- **序列随机抽取**：`random.choice(sequence)` 会从非空序列中等概率返回一个元素，常用于抽签、随机匹配等场景。
+- **可扩展性设计**：在 glm3.py 中新增或删除角色只需修改 `role_system` 字典；随机逻辑自动适配，体现“数据驱动行为”的思路。glm2.py 若要换身份必须直接改字符串。
+- **确定性 vs 随机性**：glm2.py 的固定角色有利于测试，glm3.py 的随机角色提供更真实的猜身份体验，展示了如何用标准库快速引入“非确定性”行为。
+
 ### 学习启示
 - **条件分层**：可以先基于输入做一次判断，再用模型输出进行二次判断，体现 if-else 的组合思维。
 - **退出控制**：`while True` 必须配合可靠的 `break` 条件；换不同判断点就能得到不同的用户体验。
