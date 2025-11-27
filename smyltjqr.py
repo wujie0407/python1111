@@ -287,7 +287,6 @@ if not st.session_state.initialized:
 st.subheader(f"💬 与 {st.session_state.selected_role} 的对话")
 
 # 显示角色头像（在聊天窗口上方）
-st.code(get_portrait(), language=None)
 st.markdown("---")  # 分隔线
 
 # 显示历史消息（跳过 system 消息）
