@@ -1,12 +1,11 @@
 import requests
 from datetime import datetime
 
-JSONBIN_BIN_ID = "6937841103998b11ea8da454"
-JSONBIN_ACCESS_KEY = "$2a$10$TCXjWi0iFx4.Rg26zbjRd.DG/WYqZMfbFNLDN7zRfkNuwujbOH3wK"
-
-JSONBIN_URL = f"https://api.jsonbin.io/v3/b/{JSONBIN_BIN_ID}"
-
-def save_latest_reply(text):
+def save_latest_reply(text, bin_id=None, access_key=None):
+    if not bin_id or not access_key:
+        return False
+    
+    url = f"https://api.jsonbin.io/v3/b/{bin_id}"
     data = {
         "text": text,
         "timestamp": datetime.now().isoformat(),
@@ -15,10 +14,10 @@ def save_latest_reply(text):
     
     try:
         response = requests.put(
-            JSONBIN_URL,
+            url,
             json=data,
             headers={
-                "X-Access-Key": JSONBIN_ACCESS_KEY,
+                "X-Access-Key": access_key,
                 "Content-Type": "application/json"
             }
         )
@@ -29,20 +28,24 @@ def save_latest_reply(text):
         print(f"JSONBin Save Exception: {e}")
         return False
 
-def get_latest_reply():
+def get_latest_reply(bin_id=None, access_key=None):
+    if not bin_id or not access_key:
+        return {"has_new": False, "text": None}
+    
     try:
+        url = f"https://api.jsonbin.io/v3/b/{bin_id}/latest"
         response = requests.get(
-            JSONBIN_URL + "/latest",
-            headers={"X-Access-Key": JSONBIN_ACCESS_KEY}
+            url,
+            headers={"X-Access-Key": access_key}
         )
         if response.status_code == 200:
             data = response.json().get("record", {})
             if not data.get("read", False):
                 data["read"] = True
                 requests.put(
-                    JSONBIN_URL,
+                    f"https://api.jsonbin.io/v3/b/{bin_id}",
                     json=data,
-                    headers={"X-Access-Key": JSONBIN_ACCESS_KEY}
+                    headers={"X-Access-Key": access_key}
                 )
                 return {"has_new": True, "text": data.get("text")}
         return {"has_new": False, "text": None}
